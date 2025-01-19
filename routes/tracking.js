@@ -7,7 +7,7 @@ const SHIPPING_API_BASE_URL = "https://shipping-api.com/app/api/v1/track-order";
 const PUBLIC_KEY = process.env.PUBLIC_KEY;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
-// Retrieve tracking details by phone number
+// Retrieve tracking details by phone number or order ID
 router.post("/get-tracking", async (req, res) => {
   const { search_input } = req.body;
 
