@@ -9,16 +9,28 @@ const PRIVATE_KEY = process.env.PRIVATE_KEY;
 
 // Retrieve tracking details by phone number
 router.post("/get-tracking", async (req, res) => {
-  const { consignee_phone } = req.body;
+  const { search_input } = req.body;
 
-  if (!consignee_phone) {
-    return res.status(400).json({ message: "Phone number is required" });
+  if (!search_input) {
+    return res.status(400).json({ message: "Input is required" });
+  }
+
+  let searchCriteria;
+
+  // Determine if the input is a 10-digit phone number or a 7-digit order ID
+  if (/^\d{10}$/.test(search_input)) {
+    searchCriteria = { consignee_phone: search_input };
+  } else if (/^\d{7}$/.test(search_input)) {
+    searchCriteria = { order_id: search_input };
+  } else {
+    return res.status(400).json({ message: "Invalid input. Please provide a 10 digit phone number or 7 digit order ID." });
   }
 
   try {
-    const orders = await Order.find({ consignee_phone }); 
+    const orders = await Order.find(searchCriteria);
+
     if (!orders || orders.length === 0) {
-      return res.status(404).json({ message: "No orders found for this phone number" });
+      return res.status(404).json({ message: "Cannot find any Order Try using Your phoneNumber" });
     }
 
     const trackingDetails = [];
@@ -29,6 +41,7 @@ router.post("/get-tracking", async (req, res) => {
         trackingDetails.push({
           order: {
             id: order._id,
+            order_id: order.order_id,
             consignee_name: order.consignee_name,
             phoneNumber: order.consignee_phone,
             product_details: order.product_detail,
@@ -59,6 +72,7 @@ router.post("/get-tracking", async (req, res) => {
           trackingDetails.push({
             order: {
               id: order._id,
+              order_id: order.order_id,
               consignee_name: order.consignee_name,
               phoneNumber: order.consignee_phone,
               awb_number: order.awb_number,
@@ -73,6 +87,7 @@ router.post("/get-tracking", async (req, res) => {
           trackingDetails.push({
             order: {
               id: order._id,
+              order_id: order.order_id,
               consignee_name: order.consignee_name,
               phoneNumber: order.consignee_phone,
               awb_number: order.awb_number,
@@ -89,6 +104,7 @@ router.post("/get-tracking", async (req, res) => {
         trackingDetails.push({
           order: {
             id: order._id,
+            order_id: order.order_id,
             consignee_name: order.consignee_name,
             phoneNumber: order.consignee_phone,
             awb_number: order.awb_number,
@@ -111,6 +127,7 @@ router.post("/get-tracking", async (req, res) => {
     res.status(500).json({ message: "Error retrieving tracking details" });
   }
 });
+
 
 // Delete tracking details by phone number
 router.post("/delete-tracking", async (req, res) => {
@@ -135,3 +152,4 @@ router.post("/delete-tracking", async (req, res) => {
 });
 
 module.exports = router;
+
