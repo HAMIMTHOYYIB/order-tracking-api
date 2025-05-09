@@ -20,7 +20,7 @@ router.post("/get-tracking", async (req, res) => {
   // Determine if the input is a 10-digit phone number or a 7-digit order ID
   if (/^\d{10}$/.test(search_input)) {
     searchCriteria = { consignee_phone: search_input };
-  } else if (/^\d{7}$/.test(search_input)) {
+  } else if (/^\d{8}$/.test(search_input)) {
     searchCriteria = { order_id: search_input };
   } else {
     return res.status(400).json({ message: "Invalid input. Please provide a 10 digit phone number or 7 digit order ID." });
